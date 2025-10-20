@@ -1,0 +1,48 @@
+name: CI - Lint · TEST
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-cache-${{ runner.os }}-node-18-${{ hashFiles('src/package-lock.json') }}
+
+      - name: Install deps
+        working-directory: src
+        run: npm ci
+        # Build the application
+      - name: Build project
+        working-directory: src
+        run: npm run build
+
+      - name: Lint
+        working-directory: src
+        run: npx eslint . --ext .js --max-warnings=0
+
+      - name: Run tests & coverage
+        working-directory: src
+        run: npm test -- --coverage
+
+      - name: Check formatting
+        working-directory: src
+        run: npx prettier --check .
+
