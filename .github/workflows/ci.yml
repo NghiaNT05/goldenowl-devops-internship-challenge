@@ -3,11 +3,11 @@ name: ci pipeline
 on:
   push:
     branches:
-      - main
+      - master
       - 'feature/**'
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   ci:
@@ -89,7 +89,6 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           image: local/app:${{ github.sha }}
-          format: cyclonedx-json
           output-file: sbom.json
 
       - name: Install Cosign
