@@ -47,12 +47,13 @@ jobs:
 
   docker:
     needs: ci
-    if: github.ref =='refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
       packages: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -91,7 +92,7 @@ jobs:
           image: local/app:${{ github.sha }}
           output-file: sbom.json
 
-      - name: Upload SBOM to github
+      - name: Upload SBOM to GitHub (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: sbom-${{ github.sha }}
@@ -120,12 +121,6 @@ jobs:
           COSIGN_EXPERIMENTAL: 1
         run: |
           cosign sign --yes ${{ secrets.DOCKERHUB_USERNAME }}/devops-demo:${{ github.sha }}
-          
-
-      - name: Attach SBOM to image
-        if: success()
-        run: |
-          cosign attach sbom --sbom sbom.json ${{ secrets.DOCKERHUB_USERNAME }}/devops-demo:${{ github.sha }}
 
       - name: Verify image signature
         if: success()
