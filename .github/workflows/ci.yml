@@ -50,7 +50,7 @@ jobs:
     if: github.ref =='refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
       packages: write
     steps:
@@ -91,6 +91,12 @@ jobs:
           image: local/app:${{ github.sha }}
           output-file: sbom.json
 
+      - name: Upload SBOM to github
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ github.sha }}
+          path: sbom.json
+
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.5.0
 
@@ -114,7 +120,7 @@ jobs:
           COSIGN_EXPERIMENTAL: 1
         run: |
           cosign sign --yes ${{ secrets.DOCKERHUB_USERNAME }}/devops-demo:${{ github.sha }}
-          cosign sign --yes ${{ secrets.DOCKERHUB_USERNAME }}/devops-demo:latest
+          
 
       - name: Attach SBOM to image
         if: success()
