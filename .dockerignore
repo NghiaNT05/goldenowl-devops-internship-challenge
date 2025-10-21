@@ -1,8 +1,11 @@
 **/node_modules/
 **/dist
+coverage/
 .git
-npm-debug.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 .coverage
 .coverage.*
 .env
-.aws
+.awsa
